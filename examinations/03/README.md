@@ -121,9 +121,15 @@ Run the exact same playbook again and study the output. What is the difference?
 
 What does the `ansible.builtin.debug` module actually do?
 
+**ANSWER:**  
+It simply prints information in the output when running the playbook. The module is useful for debugging as it can be used to display variable values, messages and diagnostics during runtime. It does not apply any changes on the target systems.
+
 ## QUESTION B
 
 What is the variable 'ansible_facts' and where does it come from?
+
+**ANSWER:**  
+The variable `ansible_facts` contains a dictionary with information that has been extracted by Ansible about every host. Ansible does this before running any of the tasks. The variable contains a range of system information such as hostname, CPU, RAM, OS type, network interfaces etc. The value `ansible_facts.nodename` that was used in the playbook above holds the kernel node name, which in most cases reflects the current hostname.
 
 ## QUESTION C
 
@@ -134,6 +140,9 @@ How do we now remove the software we installed through the playbook above? Make 
 playbook remove the exact same software we previously installed. Call the created
 playbook `03-uninstall-software.yml`.
 
+**ANSWER:**  
+The playbook to uninstall the software is similar to the previous one used to install them. The only significant change is to change `state: present` to `state: absent` under the `ansible.builtin.package` module.
+
 ## BONUS QUESTION
 
 What happens when you run `ansible-playbook` with different options?
@@ -142,6 +151,11 @@ Explain what each of these options do:
 * --verbose, -vv, -vvv, -vvvv
 * --check
 * --syntax-check
+
+**ANSWER:**  
+**--verbose**: Prints additional debug messages. Adding multiple v's increases the verbosity.  
+**--check**: Will run the playbook without making any changes, and instead predicts changes that might occur  
+**--syntax-check**: Performs a syntax check on the playbook without executing it
 
 ## Study Material & Documentation
 
