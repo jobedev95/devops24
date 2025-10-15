@@ -73,8 +73,23 @@ The output from the playbook run contains something that looks suspiciously like
 a number of keys and values that come from the output of the Ansible module.
 
 What does the output look like the first time you run this playbook?
-
 What does the output look like the second time you run this playbook?
+
+### ANSWER:
+
+**First run:**
+```
+PLAY RECAP
+*********************************************************************
+192.168.121.206 : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+**Second run:**
+```
+PLAY RECAP
+*********************************************************************
+192.168.121.206 : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+On the first run it reports `changed: true` and play recap shows `changed=1`, which indicates that the task successfully copied over the file. The second run indicates no changes were made in the play recap, where it shows `changed=0`, meaning the file was already there and no changes had to be made.
 
 # QUESTION B
 
@@ -114,12 +129,29 @@ Again, these addresses are just examples, make sure you use the IP of the actual
 Note also that `curl` needs the `--insecure` option to establish a connection to a HTTPS server with
 a self signed certificate.
 
+### ANSWER:  
+To make nginx restart using the `ansible.builtin.service` you can create a task that sets the state of the nginx service to  `state: restarted`:
+```yaml
+- name: Restart nginx service
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+```
+
 # QUESTION C
 
 What is the disadvantage of having a task that _always_ makes sure a service is restarted, even if there is
 no configuration change?
 
+### ANSWER: 
+Restarting a service even when no configuration changes have been made can be disruptive as it causes unnecessary downtime. Best practice is to use notify + handlers, which are tasks that only gets triggered at the end of a play if changes have been made.
+
+
 # BONUS QUESTION
 
 There are at least two _other_ modules, in addition to the `ansible.builtin.service` module that can restart
 a `systemd` service with Ansible. Which modules are they?
+
+### ANSWER: 
+`ansible.builtin.command` (together with the command **systemctl restart *service-name***) and `ansible.builtin.systemd` are alternative modules that could be used to restart a systemd service.
+
