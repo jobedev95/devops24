@@ -112,9 +112,49 @@ incompatibilities.
 
 What happens if you run `ansible-inventory --list` in the directory you created above?
 
+### ANSWER:
+Running the command gave me the following output:
+```json
+{
+    "_meta": {
+        "hostvars": {
+            "192.168.121.206": {
+                "ansible_ssh_private_key_file": "/home/josef/Documents/Labbar/devops24/lab_environment/deploy_key",
+                "ansible_user": "deploy"
+            },
+            "192.168.121.217": {
+                "ansible_ssh_private_key_file": "/home/josef/Documents/Labbar/devops24/lab_environment/deploy_key",
+                "ansible_user": "deploy"
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "db",
+            "web"
+        ]
+    },
+    "db": {
+        "hosts": [
+            "192.168.121.217"
+        ]
+    },
+    "web": {
+        "hosts": [
+            "192.168.121.206"
+        ]
+    }
+}
+```
+The output of this command shows all current hosts, groups and variables in the Ansible inventory in a JSON format. Hosts in this case meaning any machine that Ansible can connect to, and groups being collections of hosts. Variables can contain key information such as the path to a private key file like in this case.
+
 ## QUESTION B
 
 What happens if you run `ansible-inventory --graph` in the directory you created above?
+
+### ANSWER:
+It gives a simple tree view of the inventory, which shows each group and all hosts belonging to them. It's more human readable than the JSON format output of the previous command.
 
 ## QUESTION C
 
@@ -132,6 +172,10 @@ Study the output of this command.
 
 What does the `ansible_connection=local` part mean?
 
+### ANSWER:
+
+It tells Ansible that any connections to that machine should not be using the SSH-protocol as the given host is a local machine. Instead it will execute all tasks locally as if you were running them yourself.
+
 ## BONUS QUESTION
 
 The command `ansible-config` can be used for creating, viewing, validating, and listing
@@ -141,8 +185,7 @@ Try running
 
     $ ansible-config --help
 
-Make an initial configuration file with the help of this command, and write it into a file
-called `ansible.cfg.init`. HINT: Redirections in the terminal can be done with '>' or 'tee(1)'.
+Make an initial configuration file with the help of this command, and write it into a file called `ansible.cfg.init`. HINT: Redirections in the terminal can be done with '>' or 'tee(1)'.
 
 Open this file and look at the various options you can configure in Ansible.
 
@@ -150,6 +193,12 @@ In your Ansible working directory where the `ansible.cfg' is, run
 
     $ ansible-config dump
 
-You should get a pager displaying all available configuration values. How does it differ
-from when you run the same command in your usual home directory?
+You should get a pager displaying all available configuration values. How does it differ from when you run the same command in your usual home directory?
 
+### ANSWER:
+
+The command shows all default settings in green color, while any settings deviating from default values are highlighted in orange. Orange colors also highlights variables that needs to be set, such as the path to a config file. In this case two of the variables differed:
+
+**`CONFIG_FILE()`** - Should contain the path to the config file. Is empty by default. In the working directory of the current project this variable shows the path to the configuration file we created. In the home directory this variable is empty.
+
+**`DEFAULT_HOST_LIST`** - Should contain the path to the hosts file. Is set to `/etc/ansible/hosts` by default. In the working directory of the current project this variable shows the path to the custom hosts file, while the home directory has it set to the default hosts path.
