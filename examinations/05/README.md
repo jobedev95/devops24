@@ -43,6 +43,11 @@ configuration:
         include /etc/nginx/default.d/*.conf;
     }
 
+*IMPORTANT*: If you happen to run an earlier version of
+`nginx`, such as one in AlmaLinux9, it will not recognize
+the "http2" directive. You can simply comment it out with
+a `#`, or remove the line completely.
+
 There are many ways to get this configuration into nginx, but we are going to copy
 this as a file into `/etc/nginx/conf.d/https.conf` with Ansible with the
 [ansible.builtin.copy](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html)

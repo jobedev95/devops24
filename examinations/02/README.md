@@ -21,7 +21,7 @@ In our dedicated Ansible directory, create a file called `ansible.cfg`
 (there is an example `ansible.cfg` in this same directory that you
  may copy).
 
-Put the following content (only two lines) into this file:
+Put the following content (only three lines) into this file:
 
     [defaults]
     host_key_checking = False
