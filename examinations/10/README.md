@@ -33,3 +33,72 @@ Use the `ansible.builtin.template` module to accomplish this task.
 * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
 * https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html
 * https://nginx.org/en/docs/http/ngx_http_core_module.html#listen
+
+
+
+### ANSWER:
+
+I turned the old Nginx configuration file into a Jinja template and replaced the static listen values with Jinja2 variables:
+```diff
+-    listen 80;
+-    listen 443 ssl;
++    listen {{ ansible_default_ipv4.address }}:80;
++    listen {{ ansible_default_ipv4.address }}:443 ssl;
+```
+
+I removed the previous task that used the `ansible.builtin.copy` module, which copied the Nginx configuration file to the web server as-is. The new task instead uses the `ansible.builtin.template` module, which dynamically inserts the hosts default IPv4 address using the Jinja2 template:
+```yml
+    - name: Deploy example.internal.conf 
+      ansible.builtin.template:
+        src: templates/example.internal.conf.j2
+        dest: /etc/nginx/conf.d/example.internal.conf
+      register: result
+```
+
+I could then verify the change by running the following command on the host:
+```bash
+grep listen /etc/nginx/conf.d/example.internal.conf
+```
+It gave me this output which confirms the change:
+```
+listen 192.168.121.206:80;
+listen 192.168.121.206:443 ssl;
+```
+
+---
+**Below is the full playbook:**
+```yaml
+- name: Copy HTTPS Nginx configuration
+  hosts: web
+  become: true
+  tasks:
+    - name: Copy https.conf to Nginx configuration directory
+      ansible.builtin.copy:
+        src: https.conf
+        dest: /etc/nginx/conf.d/https.conf
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Create web root directory
+      ansible.builtin.file:
+        path: /var/www/example.internal/html/
+        state: directory
+        mode: '0755'
+    - name: Copy index.html to html directory
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /var/www/example.internal/html/
+    - name: Deploy Nginx configuration file
+      ansible.builtin.template:
+        src: templates/example.internal.conf.j2
+        dest: /etc/nginx/conf.d/example.internal.conf
+      register: result
+    - name: Print result
+      ansible.builtin.debug:
+        var: result
+    - name: Restart nginx service
+      ansible.builtin.service:
+         name: nginx
+         state: restarted
+      when: result is changed
+````
