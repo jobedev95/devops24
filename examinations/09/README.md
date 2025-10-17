@@ -70,7 +70,7 @@ vault_password_file = files/vault-pass.txt
 
 Now I can run the playbook as normal without any flags.
 
-
+---
 **Below is the full playbook:**
 ```yaml
 ---

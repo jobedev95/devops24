@@ -16,7 +16,7 @@ Look at the contents of the `~/.ssh` directory:
 
 What are the permissions of the `~/.ssh` directory?
 
-**ANSWER:**
+### ANSWER:  
 **Output:**
 ```bash
 drwx------. 2 deploy deploy 29 Oct 13 10:42 /home/deploy/.ssh
@@ -26,21 +26,21 @@ The hidden directory `~/.ssh` has the permissions read, write and execute for th
 
 Why are the permissions set in such a way?
 
-**ANSWER:**
+### ANSWER:  
 This directory contains sensitive information so security is of utmost concern. Both private ssh keys and `authorized_keys` are stored in this directory. To prevent unauthorized access these permissions ensures that only the owner can view or modify the contents and SSH-configuration. 
 
 ## QUESTION B
 
 What does the file `~/.ssh/authorized_keys` contain?
 
-**ANSWER:**
+### ANSWER:  
 The file `authorized_keys` contains a list of public SSH keys that are allowed to access the system via SSH. When a SSH connection attempt is detected, the system first checks if the public key presented by the client matches any of the entries in this file. If there's a match access will be granted, with no password required.
 
 ## QUESTION C
 
 When logged into one of the VMs, how can you connect to the other VM without a password?
 
-**ANSWER:**
+### ANSWER
 Initially the ***deploy*** user in the dbserver does not have a password. This will be required to copy the public key over from the webserver with the `ssh-copy-id` command. I connected to the dbserver from the host computer and added a password to the user to fix this problem:
 ```bash
 sudo passwd deploy
@@ -70,7 +70,7 @@ ssh deploy@dbserver
 
 Can you run a command on a remote host via SSH? How?
 
-**ANSWER:**
+### ANSWER:  
 Yes, you simply use the standard ssh command but end it with the command you want to execute on the second server wrapped in quotation marks. This will not start an interactive SSH-session.
 ```bash
 ssh deploy@dbserver 'ls -l /home/deploy'

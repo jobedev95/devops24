@@ -66,7 +66,7 @@ webappdb
 
 Running the command `SHOW GRANTS FOR 'webappuser'@'localhost';` also confirms that webappuser has all privileges.
 
-
+---
 **Below is the full playbook:**
 ```yaml
 ---
