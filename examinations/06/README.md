@@ -119,6 +119,9 @@ HINTS:
   also set the correct SELinux security context type on the directory and files. The context in question
   in this case should be `httpd_sys_content_t` for the `/var/www/example.internal/html/` directory.
 
+### ANSWER:
+Running the command `ls -Z index.html` inside the server shows that the ***index.html*** file already inherits the correct context label. This is because there already is a set SELinux policy by default which recursively applies the `httpd_sys_content_t` context to any files inside `/var/www(/.*)?`.
+
 # QUESTION B
 
 To each of the tasks that change configuration files in the webserver, add a `register: [variable_name]`.
@@ -167,6 +170,9 @@ There are several ways to accomplish this, and there is no _best_ way to do this
 
 Is this a good way to handle these types of conditionals? What do you think?
 
+### ANSWER:
+While the current method works in this scenario another commonly recommended alternative for larger playbooks would be to use notify and handlers, which are tasks that gets triggered when specific changes have been made. This is because it scales better as it avoids repetitive conditionals.
+
 # BONUS QUESTION
 
 Imagine you had a playbook with hundreds of tasks to be done on several hosts, and each one of these tasks
@@ -177,3 +183,13 @@ would you like the flow to work?
 
 Describe in simple terms what your preferred task flow would look like, not necessarily implemented in
 Ansible, but in general terms.
+
+
+### ANSWER:  
+Since each restart causes downtime it would be preferable to both minimize the amount of restarts and also to schedule them in a way that makes it less disruptive.
+
+I would begin with grouping tasks related by service or component, such as all nginx tasks, system configurations or database settings etc. This would decrease the amount of restarts required, since a restart would be triggered only when all changes for a certain service have been applied.
+
+To ensure high availability, changes can be rolled out in batches instead of being applied to the full inventory all at once. Restarts can also be scheduled during low-traffic windows with cron or an orchestrator to avoid downtime during peak hours.
+
+Additionally, when possible configurations can be reloaded instead of hard restarting the system to apply the changes.

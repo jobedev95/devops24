@@ -18,8 +18,90 @@ Make a copy of the playbook from the previous examination, call it `09-mariadb-p
 and modify it so that the task that sets the password is injected via an Ansible variable,
 instead of as a plain text string in the playbook.
 
+### ANSWER: 
+
+I first created a YAML file called ***secrets.yml*** containing a variable with the db-server password:
+```yaml
+---
+db_password: "secretpassword"
+```
+
+After I created the file I added the path to the it at the playbook level using the `vars_files` parameter:
+```yaml
+  vars_files:
+    - vars/secrets.yml
+```
+Lastly I refer to the variable containing the password (in the task that's creating the database):
+```yaml
+password: "{{ db_password }}"
+```
+
+With this setup, the playbook will automatically fetch the variable containing the password from the secrets.yml file, meaning it does not have to store the password in plain text. However the YAML file containing the variable still contains the password in plain text.
+
+
 # QUESTION B
 
 When the [QUESTION A](#question-a) is solved, use `ansible-vault` to store the password in encrypted
 form, and make it possible to run the playbook as before, but with the password as an
 Ansible Vault secret instead.
+
+### ANSWER:
+
+I encrypted the file with the following command and gave it the password "secrettest":
+```bash
+ansible-vault encrypt vars/secrets.yml
+```
+
+To run the playbook I can either run this command and then enter my password interactively:
+```bash
+ansible-playbook 09-mariadb-password.yml --ask-vault-pass
+```
+
+Or I can run the playbook while referring to a separate file which contains the vault password in plain text:
+```bash
+ansible-playbook 09-mariadb-password.yml --vault-password-file files/vault-pass.txt
+```
+
+To make it even better I can add the path to the file containing the vault password in the ansible config file:
+```conf
+[defaults]
+vault_password_file = files/vault-pass.txt
+```
+
+Now I can run the playbook as normal without any flags.
+
+
+**Below is the full playbook:**
+```yaml
+---
+- hosts: db
+  become: true
+  vars_files:
+    - vars/secrets.yml
+  tasks:
+    - name: Ensure MariaDB-server is installed.
+      ansible.builtin.package:
+        name: mariadb-server
+        state: present
+    - name: Ensure MariaDB-server is enabled and started
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+    - name: Install PyMySQL
+      ansible.builtin.package:
+        name: python3-PyMySQL
+        state: present
+    - name: Create a database called webappdb
+      community.mysql.mysql_db:
+        name: webappdb
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+    - name: Create a database user called webappuser
+      community.mysql.mysql_user:
+        name: webappuser
+        password: "{{ db_password }}"
+        priv: 'webappdb.*:ALL'
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+```
