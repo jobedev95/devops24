@@ -1,0 +1,19 @@
+---
+- name: Create user accounts on web server
+  hosts: web
+  become: true
+
+  vars_files:
+    - vars/users.yml
+
+  tasks:
+    - name: Ensure users are present with correct groups, password and info
+      ansible.builtin.user:
+        name: "{{ item.username }}"
+        groups: "{{ item.groups | join(',') }}"
+        append: yes
+        state: present
+        password: "{{ item.password }}"
+        comment: "{{ item.gecos }}"
+      loop: "{{ users }}"
+      no_log: true # Hide hashed passwords from output
