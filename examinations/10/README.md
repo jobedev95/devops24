@@ -74,7 +74,7 @@ listen 192.168.121.206:443 ssl;
   tasks:
     - name: Copy https.conf to Nginx configuration directory
       ansible.builtin.copy:
-        src: https.conf
+        src: files/https.conf
         dest: /etc/nginx/conf.d/https.conf
         owner: root
         group: root
