@@ -51,3 +51,59 @@ servers:
 # Resources and Documentation
 
 https://firewalld.org/
+
+### ANSWER:
+
+I first created a task that installs `firewalld` and `python3-firewall`. I then have a task that enables and starts the `firewalld` service. Both tasks apply on both servers.
+```yaml
+---
+- name: Configure firewalld on all servers
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure firewalld and python3-firewall are installed
+      ansible.builtin.package:
+        name:
+          - firewalld
+          - python3-firewall
+        state: present
+
+    - name: Enable and start firewalld service
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+```
+
+I then created a task that configures the firewall on the webserver. It enables the HTTP and HTTPS services in firewalld:
+```yaml
+- name: Configure firewall on webserver
+  hosts: web
+  become: true
+  tasks:
+    - name: Enable HTTP and HTTPS services in firewalld
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true # Ensures the configuration stays after reboots
+        state: enabled
+        immediate: true # Applies without restarting firewalld
+      loop:
+        - http
+        - https
+```
+
+Lastly I created a task that configures the firewall on the dbserver. It enables the MySQL in firewalld:
+```yaml
+- name: Configure firewall on dbserver
+  hosts: db
+  become: true
+  tasks:
+    - name: Enable MySQL service in firewalld
+      ansible.posix.firewalld:
+        service: mysql
+        permanent: true # Ensures the configuration stays after reboots
+        state: enabled
+        immediate: true # Applies without restarting firewalld
+```
+
+To confirm that all firewall configurations were successful I ran the command `sudo cat /etc/firewalld/zones/public.xml` on both servers which gave me identical outputs as the examples given in the examination.
