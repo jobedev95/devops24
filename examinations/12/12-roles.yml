@@ -1,0 +1,18 @@
+---
+- name: Configure base settings for all servers
+  hosts: all
+  become: true
+  roles:
+    - base
+
+- name: Configure the web server(s) according to specs
+  hosts: web
+  become: true
+  roles:
+    - webserver
+
+- name: Configure the database server(s) according to specs
+  hosts: db
+  become: true
+  roles:
+    - dbserver

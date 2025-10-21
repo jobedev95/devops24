@@ -1,0 +1,17 @@
+---
+# tasks file for webserver
+
+- name: Include vaulted users
+  ansible.builtin.include_vars: vars/users.yml
+
+- name: Include installation of and autoboot of nginx tasks
+  ansible.builtin.import_tasks: webserver.yml
+
+- name: Include deployment of self-signed certification task
+  ansible.builtin.import_tasks: install-cert.yml
+
+- name: Include configuration of nginx tasks
+  ansible.builtin.import_tasks: 10-web-template.yml
+
+- name: Include creation of users tasks
+  ansible.builtin.import_tasks: 11-create-users.yml

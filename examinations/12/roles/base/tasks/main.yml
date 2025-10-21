@@ -1,0 +1,4 @@
+---
+# tasks file for base
+- name: Include installation of base software tasks
+  ansible.builtin.import_tasks: 03-site.yml
