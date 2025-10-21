@@ -21,3 +21,36 @@ Also note the difference between `restarted` and `reloaded` in the [ansible.buil
 
 In order for `nginx` to pick up any configuration changes, it's enough to do a `reload` instead of
 a full `restart`.
+
+
+
+### ANSWER:
+
+I removed the task that restarts nginx when the `result` variable is changed. Instead, I add a `notify:` directive to the task that should trigger a handler called ***Reload nginx***:
+```yaml
+- name: Deploy nginx configuration file
+  ansible.builtin.template:
+    src: templates/example.internal.conf.j2
+    dest: /etc/nginx/conf.d/example.internal.conf
+  register: result
+  notify: Reload nginx
+```
+In the `handlers` directory of the webserver role I create a handler task file with the following handler to reload nginx:
+```yaml
+- name: Reload nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+```
+
+In the `handlers/main.yml` file I import the handler task:
+```yaml
+- name: Include nginx reload handlers
+  import_tasks: reload_nginx.yml
+```
+
+After that I can run the playbook as usual. The output clearly shows when then handler has been executed:
+```bash
+RUNNING HANDLER [webserver : Reload nginx] ***********************************************************************
+changed: [192.168.121.206]
+```
