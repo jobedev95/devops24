@@ -1,0 +1,79 @@
+---
+- name: Install and configure Node Exporter on servers
+  hosts: all
+  become: true
+
+  vars:
+    node_exporter_version: "1.9.1"
+
+  tasks:
+    - name: Ensure node_exporter user exists
+      ansible.builtin.user:
+        name: "node_exporter"
+        shell: /sbin/nologin # Prevents anyone from logging in interactively as the user
+        system: true # Defines it as a system user for system services
+        create_home: false
+
+    - name: Download Node Exporter archive to temporary folder
+      ansible.builtin.get_url:
+        url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+        dest: /tmp/node_exporter.tar.gz
+        mode: "0644"
+
+    - name: Extract Node Exporter binary
+      ansible.builtin.unarchive:
+        src: /tmp/node_exporter.tar.gz
+        dest: /tmp/
+        remote_src: true # Informs Ansible that the archive file is on the remote host
+
+    - name: Copy Node Exporter binary to /usr/sbin/node_exporter
+      ansible.builtin.copy:
+        src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+        dest: /usr/sbin/node_exporter
+        owner: node_exporter
+        group: node_exporter
+        mode: "0755"
+        remote_src: true # Informs Ansible that the binary file is on the remote host
+
+    # The following four tasks creates a directory and copies unit files according to official instructions:
+    - name: Create textfile collector directory
+      ansible.builtin.file:
+        path: /var/lib/node_exporter/textfile_collector
+        state: directory
+        owner: node_exporter
+        group: node_exporter
+        mode: '0755'
+
+    - name: Copy Node Exporter systemd service and socket files
+      ansible.builtin.copy:
+        src: "files/{{ item }}"
+        dest: /etc/systemd/system/
+        mode: "0644"
+      loop:
+        - node_exporter.service
+        - node_exporter.socket
+      notify: Reload systemd
+
+    - name: Copy sysconfig file
+      ansible.builtin.copy:
+        src: files/sysconfig.node_exporter
+        dest: /etc/sysconfig/node_exporter
+        mode: "0644"
+
+    - name: Start and enable the Node Exporter socket
+      ansible.builtin.systemd:
+        name: node_exporter.socket
+        enabled: true
+        state: started
+
+    - name: Enable Node Exporter service in firewalld
+      ansible.posix.firewalld:
+        service: prometheus-node-exporter # Opens TCP port 9100 in the firewall
+        permanent: true
+        state: enabled
+        immediate: true
+
+  handlers:
+    - name: Reload systemd # Rescans unit files
+      ansible.builtin.systemd:
+        daemon_reload: true
