@@ -117,7 +117,7 @@ I have two tasks that uses the `ansible.builtin.get_url` and `ansible.builtin.un
 
 I downloaded the service unit files `node_exporter.service` and `node_exporter.socket`, as well as the configuration file `sysconfig.node_exporter` from the provided GitHub link. I created three tasks in accordance with the instructions in the README file.
 
-- The first creates the directory `/var/lib/node_exporter/textfile_collector` in which all Node Exporter metrics are stored. 
+- The first creates the directory `/var/lib/node_exporter/textfile_collector`, which is used by Node Exporter to read custom metric files
 
 - The second copies the `node_exporter.service` and `node_exporter.socket` files into `/etc/systemd/system/`. It also notifies a handler called ***Reload systemd***, which reloads systemd to re-scan and load the new unit files. The service file defines how the service runs while the socket file defines the socket activation behavior.
 
