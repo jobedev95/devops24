@@ -6,9 +6,10 @@
     - name: Ensure nginx is installed
       ansible.builtin.package:
         name: nginx
-        state: present
+        state: latest
 
     - name: Ensure nginx is started at boot
       ansible.builtin.service:
         name: nginx
         enabled: true
+        state: started
