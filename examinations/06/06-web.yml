@@ -33,7 +33,7 @@
     - name: Print result
       ansible.builtin.debug:
         var: result
-    - name: Restart nginx service
+    - name: Restart nginx service  # noqa no-handler
       ansible.builtin.service:
         name: nginx
         state: restarted
