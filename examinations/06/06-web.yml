@@ -19,21 +19,22 @@
       ansible.builtin.copy:
         src: files/index.html
         dest: /var/www/example.internal/html/
-    - name: Copy index.html to home directory
-      ansible.builtin.copy:
-        src: files/index.html
-        dest: /home
+        owner: root
+        group: root
+        mode: '0644'
     - name: Ensure the nginx configuration is updated for example.internal
       ansible.builtin.copy:
         src: files/example.internal.conf
         dest: /etc/nginx/conf.d/example.internal.conf
+        owner: root
+        group: root
+        mode: '0644'
       register: result
     - name: Print result
       ansible.builtin.debug:
         var: result
     - name: Restart nginx service
       ansible.builtin.service:
-         name: nginx
-         state: restarted
+        name: nginx
+        state: restarted
       when: result is changed
-
