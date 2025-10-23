@@ -13,8 +13,8 @@
           static_configs:
             - targets:
                 - 'node-exporter:9100'
-                - '192.168.121.206:9100' # Webserver
-                - '192.168.121.217:9100' # Dbserver
+                - '192.168.121.206:9100'  # Webserver
+                - '192.168.121.217:9100'  # Dbserver
           relabel_configs:
             - source_labels: [__address__]
               regex: 'node-exporter:9100'

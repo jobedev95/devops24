@@ -10,8 +10,10 @@
     - name: Ensure node_exporter user exists
       ansible.builtin.user:
         name: "node_exporter"
-        shell: /sbin/nologin # Prevents anyone from logging in interactively as the user
-        system: true # Defines it as a system user for system services
+        # Prevents anyone from logging in interactively as the user
+        shell: /sbin/nologin
+        # Defines it as a system user for system services
+        system: true
         create_home: false
 
     - name: Download Node Exporter archive to temporary folder
@@ -24,7 +26,8 @@
       ansible.builtin.unarchive:
         src: /tmp/node_exporter.tar.gz
         dest: /tmp/
-        remote_src: true # Informs Ansible that the archive file is on the remote host
+        # Informs Ansible that the archive file is on the remote host
+        remote_src: true
 
     - name: Copy Node Exporter binary to /usr/sbin/node_exporter
       ansible.builtin.copy:
@@ -33,9 +36,10 @@
         owner: node_exporter
         group: node_exporter
         mode: "0755"
-        remote_src: true # Informs Ansible that the binary file is on the remote host
+        # Informs Ansible that the binary file is on the remote host
+        remote_src: true
 
-    # The following four tasks creates a directory and copies unit files according to official instructions:
+    # The following four tasks are done according to official instructions:
     - name: Create textfile collector directory
       ansible.builtin.file:
         path: /var/lib/node_exporter/textfile_collector
@@ -68,12 +72,12 @@
 
     - name: Enable Node Exporter service in firewalld
       ansible.posix.firewalld:
-        service: prometheus-node-exporter # Opens TCP port 9100 in the firewall
+        service: prometheus-node-exporter  # Opens TCP port 9100 in the firewall
         permanent: true
         state: enabled
         immediate: true
 
   handlers:
-    - name: Reload systemd # Rescans unit files
+    - name: Reload systemd  # Rescans unit files
       ansible.builtin.systemd:
         daemon_reload: true
