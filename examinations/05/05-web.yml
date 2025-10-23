@@ -12,5 +12,5 @@
         mode: '0644'
     - name: Restart nginx service
       ansible.builtin.service:
-         name: nginx
-         state: restarted
+        name: nginx
+        state: restarted
