@@ -23,9 +23,9 @@
     - name: Enable HTTP and HTTPS services in firewalld
       ansible.posix.firewalld:
         service: "{{ item }}"
-        permanent: true # Ensures the configuration stays after reboots
+        permanent: true  # Ensures the configuration stays after reboots
         state: enabled
-        immediate: true # Applies without restarting firewalld
+        immediate: true  # Applies without restarting firewalld
       loop:
         - http
         - https
@@ -37,6 +37,6 @@
     - name: Enable MySQL service in firewalld
       ansible.posix.firewalld:
         service: mysql
-        permanent: true # Ensures the configuration stays after reboots
+        permanent: true  # Ensures the configuration stays after reboots
         state: enabled
-        immediate: true # Applies without restarting firewalld
+        immediate: true  # Applies without restarting firewalld
