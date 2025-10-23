@@ -4,9 +4,9 @@
   ansible.builtin.user:
     name: "{{ item.username }}"
     groups: "{{ item.groups | join(',') }}"
-    append: yes
+    append: true
     state: present
     password: "{{ item.password }}"
     comment: "{{ item.gecos }}"
   loop: "{{ users }}"
-  no_log: true # Hide hashed passwords from output
+  no_log: true  # Hide hashed passwords from output

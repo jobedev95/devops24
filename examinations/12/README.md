@@ -58,7 +58,7 @@ In the `main.yml` file, I refer to the task file with:
   ansible.builtin.import_tasks: 03-site.yml
 ```
 
-I then moved the relevant playbooks from previous examinations into the `tasks` folder of their respective role. Depending on which host they targeted they were placed in either the dbserver or webserver role. I removed all playbook-level directives from each one and imported them using `import_tasks` in the `main.yml` file of both roles.
+I then moved the relevant playbooks from previous examinations into the `tasks` folder of their respective role. Depending on which host they targeted they were placed in either the dbserver or webserver role. I removed all playbook-level directives from each one and imported them using `import_tasks` in the `main.yml` file of both roles. All handlers were removed and put into the  `handlers/main.yml` file instead.
 
 The dbserver `task/main.yml` file ended up looking like this:
 ```yaml

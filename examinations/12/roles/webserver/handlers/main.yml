@@ -1,2 +1,6 @@
 ---
 # handlers file for webserver
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted

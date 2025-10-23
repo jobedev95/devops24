@@ -1,4 +1,5 @@
 ---
+- name: Test dbserver
 - hosts: localhost
   remote_user: root
   roles:
