@@ -1,0 +1,96 @@
+# yamllint disable rule:line-length
+---
+- name: Gather package facts
+  ansible.builtin.package_facts:
+
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Gather SSHD configuration
+  ansible.builtin.slurp:
+    src: /etc/ssh/sshd_config
+  register: sshd_config
+
+# 1. CIS AlmaLinux 10 | Section 2.1.15 | Ensure telnet server services are not in use
+- name: Check telnet-server is not installed
+  ansible.builtin.assert:
+    that: "'telnet-server' not in ansible_facts.packages"
+    success_msg: "telnet-server package is not installed"
+    fail_msg: "telnet-server package is installed"
+  ignore_errors: true  # noqa ignore-errors
+
+# 2. CIS AlmaLinux 10 | Section 4.1.1 | Ensure firewalld is installed
+- name: Check firewalld is installed
+  ansible.builtin.assert:
+    that: "'firewalld' in ansible_facts.packages"
+    success_msg: "firewalld is installed"
+    fail_msg: "firewalld is not installed"
+  ignore_errors: true  # noqa ignore-errors
+
+# 3. CIS AlmaLinux 10 | Section 4.1.3 | Ensure firewalld.service is configured
+- name: Check firewalld service state
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.services['firewalld.service'].state == 'running'
+      - ansible_facts.services['firewalld.service'].status == 'enabled'
+    success_msg: "firewalld is running and enabled"
+    fail_msg: "firewalld is not running or disabled"
+  ignore_errors: true  # noqa ignore-errors
+
+# 4. CIS AlmaLinux 10 | Section 1.3.1.5 | Ensure the SELinux mode is enforcing
+- name: Check SELinux enforcing
+  ansible.builtin.assert:
+    that: ansible_facts.selinux.status == "enabled" and ansible_facts.selinux.mode == "enforcing"
+    success_msg: "SELinux is enforcing"
+    fail_msg: "SELinux is not enforcing"
+  ignore_errors: true  # noqa ignore-errors
+
+# 5. CIS AlmaLinux 10 | Section 2.2.1 | Ensure ftp client is not installed
+- name: Check ftp client is not installed
+  ansible.builtin.assert:
+    that: "'ftp' not in ansible_facts.packages"
+    success_msg: "Compliant: ftp client not installed"
+    fail_msg: "Non-compliant: ftp client is installed"
+  ignore_errors: true  # noqa ignore-errors
+
+# 6. CIS AlmaLinux 10 | Section 2.1.12 | Ensure rsync services are not in use
+- name: Check rsync-daemon is not installed
+  ansible.builtin.assert:
+    that: "'rsync-daemon' not in ansible_facts.packages"
+    success_msg: "rsync service not installed"
+    fail_msg: "rsync service is installed"
+  ignore_errors: true  # noqa ignore-errors
+
+# 7. CIS AlmaLinux 10 | Section 2.3.2 | Ensure rsyslog service is enabled and active
+- name: Check rsyslog service state
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.services['rsyslog.service'].state == 'running'
+      - ansible_facts.services['rsyslog.service'].status == 'enabled'
+    success_msg: "rsyslog is running and enabled"
+    fail_msg: "rsyslog is not running or disabled"
+  ignore_errors: true  # noqa ignore-errors
+
+# 8. CIS AlmaLinux 10 | Section 5.1.20 | Ensure sshd PermitRootLogin is disabled
+- name: Check SSH PermitRootLogin setting
+  ansible.builtin.assert:
+    that: "'PermitRootLogin no' in (sshd_config.content | b64decode)"
+    success_msg: "SSH root login disabled"
+    fail_msg: "SSH root login enabled"
+  ignore_errors: true  # noqa ignore-errors
+
+# 9. CIS AlmaLinux 10 | Section 5.1.19 | Ensure sshd PermitEmptyPasswords is disabled
+- name: Check PermitEmptyPasswords is disabled
+  ansible.builtin.assert:
+    that: "'PermitEmptyPasswords no' in (sshd_empty.content | b64decode)"
+    success_msg: "PermitEmptyPasswords is disabled"
+    fail_msg: "PermitEmptyPasswords is not disabled"
+  ignore_errors: true  # noqa ignore-errors
+
+# 10. CIS AlmaLinux 10 | Section 6.2.1.1 | Ensure journald service is active
+- name: Check that systemd-journald is running
+  ansible.builtin.assert:
+    that: ansible_facts.services['systemd-journald.service'].state == 'running'
+    success_msg: "systemd-journald service is active"
+    fail_msg: "systemd-journald service is not running"
+  ignore_errors: true  # noqa ignore-errors

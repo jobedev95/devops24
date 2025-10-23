@@ -1,0 +1,4 @@
+---
+# tasks file for cis_compliance
+- name: Include CIS Complaince checks tasks
+  ansible.builtin.import_tasks: 16-compliance-check.yml

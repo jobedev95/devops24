@@ -1,0 +1,6 @@
+---
+- name: Run CIS compliance checks on all hosts
+  hosts: all
+  become: true
+  roles:
+    - cis_compliance
