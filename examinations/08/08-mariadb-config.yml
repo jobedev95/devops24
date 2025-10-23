@@ -1,4 +1,5 @@
 ---
+- name: Install and configure MariaDB with webapp database
 - hosts: db
   become: true
   tasks:
@@ -10,7 +11,7 @@
       ansible.builtin.service:
         name: mariadb
         state: started
-        enabled: yes
+        enabled: true
     - name: Install PyMySQL
       ansible.builtin.package:
         name: python3-PyMySQL
