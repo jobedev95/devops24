@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 - name: Install and configure Node Exporter on servers
   hosts: all
   become: true
