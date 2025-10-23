@@ -64,41 +64,4 @@ It gave me this output which confirms the change:
 listen 192.168.121.206:80;
 listen 192.168.121.206:443 ssl;
 ```
-
----
-**Below is the full playbook:**
-```yaml
-- name: Copy HTTPS Nginx configuration
-  hosts: web
-  become: true
-  tasks:
-    - name: Copy https.conf to Nginx configuration directory
-      ansible.builtin.copy:
-        src: files/https.conf
-        dest: /etc/nginx/conf.d/https.conf
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Create web root directory
-      ansible.builtin.file:
-        path: /var/www/example.internal/html/
-        state: directory
-        mode: '0755'
-    - name: Copy index.html to html directory
-      ansible.builtin.copy:
-        src: files/index.html
-        dest: /var/www/example.internal/html/
-    - name: Deploy Nginx configuration file
-      ansible.builtin.template:
-        src: templates/example.internal.conf.j2
-        dest: /etc/nginx/conf.d/example.internal.conf
-      register: result
-    - name: Print result
-      ansible.builtin.debug:
-        var: result
-    - name: Restart nginx service
-      ansible.builtin.service:
-         name: nginx
-         state: restarted
-      when: result is changed
-````
+I moved the task that restarts nginx (filtered to only be triggered when changes have been made) to a handler instead, and inserted notify's on relevant tasks to trigger the handler. This was because ansible-lint complained and it's generally a better way to handle restarts that are triggered by changes.
