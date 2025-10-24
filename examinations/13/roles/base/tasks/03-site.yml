@@ -1,0 +1,6 @@
+---
+- name: Ensure vim, bash-completion, and qemu-guest-agent are installed
+  become: true
+  ansible.builtin.package:
+    name: vim,bash-completion,qemu-guest-agent
+    state: present

@@ -1,0 +1,10 @@
+---
+# tasks file for dbserver
+- name: Include vaulted secrets variables
+  ansible.builtin.include_vars: vars/secrets.yml
+
+- name: Include installation and configuration of MariaDB tasks
+  ansible.builtin.import_tasks: 09-mariadb-password.yml
+
+- name: Include copying md files tasks
+  ansible.builtin.import_tasks: 11-copy-md-files.yml

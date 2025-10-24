@@ -1,0 +1,6 @@
+---
+- name: Test webserver
+- hosts: localhost
+  remote_user: root
+  roles:
+    - webserver

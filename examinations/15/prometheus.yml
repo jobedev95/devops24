@@ -13,8 +13,9 @@
           static_configs:
             - targets:
                 - 'node-exporter:9100'
-                - '192.168.121.206:9100'  # Webserver
-                - '192.168.121.217:9100'  # Dbserver
+                # Dynamically get target host IP's
+                - "{{ hostvars['webserver']['ansible_host'] }}:9100"
+                - "{{ hostvars['dbserver']['ansible_host'] }}:9100"
           relabel_configs:
             - source_labels: [__address__]
               regex: 'node-exporter:9100'
