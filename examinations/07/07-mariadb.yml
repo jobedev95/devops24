@@ -1,6 +1,6 @@
 ---
 - name: Install and configure MariaDB server
-- hosts: db
+  hosts: db
   become: true
   tasks:
     - name: Ensure MariaDB-server is installed.
