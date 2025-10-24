@@ -3,6 +3,15 @@
   hosts: all
   become: true
 
+  vars:
+    deploy_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38656234373265646463326232373263336363373039626466336230373661613736616165636337
+          3236663663316665363534383861633531643936333731610a636165663064636433343937653332
+          66383636373039313666626239663839346561326531363833656461363430303365626364393336
+          6135346563663565390a383465376162393439336337376432336662353061306161666165613266
+          3866
+
   tasks:
     - name: Gather shadow entries
       ansible.builtin.getent:
@@ -11,7 +20,7 @@
     - name: Ensure deploy user has password if not set
       ansible.builtin.user:
         name: deploy
-        password: "{{ 'hunter12' | password_hash('sha512') }}"
+        password: "{{ deploy_pass | string | password_hash('sha512') }}"
       when: ansible_facts.getent_shadow.deploy[0] in ['', '!', '*']
 
     - name: Remove passwordless sudo (NOPASSWD) and enforce password requirement
