@@ -61,12 +61,12 @@ I first installed podman:
 sudo apt install podman
 ```
 
-I then configured the prometheus scrape targets:
+I then configured the Prometheus scrape targets to dynamically get target IP's via the `hostvars` dictionary, which contains all variables and facts for every host in the current inventory. Note that this requires matching target host names, which are configured in the ansible `hosts` file:
 ```yaml
 - targets:
     - 'node-exporter:9100'
-    - '192.168.121.206:9100' # Webserver
-    - '192.168.121.217:9100' # Dbserver
+    - "{{ hostvars['webserver']['ansible_host'] }}:9100"
+    - "{{ hostvars['dbserver']['ansible_host'] }}:9100"
 ```
 
 I then ran the `prometheus.yml` file, which sets up the Prometheus configuration YAML file and the pod with the two containers ***prometheus*** and ***node-exporter***.
@@ -109,8 +109,8 @@ I have two tasks that uses the `ansible.builtin.get_url` and `ansible.builtin.un
       ansible.builtin.copy:
         src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
         dest: /usr/sbin/node_exporter
-        owner: node_exporter
-        group: node_exporter
+        owner: root
+        group: root
         mode: "0755"
         remote_src: true # Informs Ansible that the binary file is on the remote host
 ```
