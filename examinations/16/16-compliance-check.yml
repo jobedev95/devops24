@@ -88,7 +88,7 @@
     # 9. CIS AlmaLinux 10 | Section 5.1.19 | Ensure sshd PermitEmptyPasswords is disabled
     - name: Check PermitEmptyPasswords is disabled
       ansible.builtin.assert:
-        that: "'PermitEmptyPasswords no' in (sshd_empty.content | b64decode)"
+        that: "'PermitEmptyPasswords no' in (sshd_config.content | b64decode)"
         success_msg: "PermitEmptyPasswords is disabled"
         fail_msg: "PermitEmptyPasswords is not disabled"
       ignore_errors: true  # noqa ignore-errors
