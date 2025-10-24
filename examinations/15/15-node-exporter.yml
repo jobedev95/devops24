@@ -34,8 +34,8 @@
       ansible.builtin.copy:
         src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
         dest: /usr/sbin/node_exporter
-        owner: node_exporter
-        group: node_exporter
+        owner: root
+        group: root
         mode: "0755"
         # Informs Ansible that the binary file is on the remote host
         remote_src: true
