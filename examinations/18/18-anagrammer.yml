@@ -1,0 +1,16 @@
+---
+- name: Run anagrammer
+  hosts: localhost
+
+  vars:
+    message: "random"  # Override with -e
+
+  tasks:
+    - name: Run anagrammer module
+      anagrammer:
+        message: "{{ message }}"
+      register: result
+
+    - name: Show the module output
+      ansible.builtin.debug:
+        var: result
