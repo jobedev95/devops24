@@ -11,11 +11,13 @@
         group: root
         mode: '0644'
       notify: Restart nginx
+
     - name: Create web root directory
       ansible.builtin.file:
         path: /var/www/example.internal/html/
         state: directory
         mode: '0755'
+
     - name: Copy index.html to html directory
       ansible.builtin.copy:
         src: files/index.html
@@ -23,6 +25,7 @@
         owner: root
         group: root
         mode: '0644'
+
     - name: Deploy nginx configuration file
       ansible.builtin.template:
         src: templates/example.internal.conf.j2
@@ -32,9 +35,11 @@
         mode: '0644'
       register: result
       notify: Restart nginx
+
     - name: Print result
       ansible.builtin.debug:
         var: result
+
   handlers:
     - name: Restart nginx
       ansible.builtin.service:

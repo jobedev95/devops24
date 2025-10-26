@@ -69,39 +69,3 @@ vault_password_file = files/vault-pass.txt
 ```
 
 Now I can run the playbook as normal without any flags.
-
----
-**Below is the full playbook:**
-```yaml
----
-- hosts: db
-  become: true
-  vars_files:
-    - vars/secrets.yml
-  tasks:
-    - name: Ensure MariaDB-server is installed.
-      ansible.builtin.package:
-        name: mariadb-server
-        state: present
-    - name: Ensure MariaDB-server is enabled and started
-      ansible.builtin.service:
-        name: mariadb
-        state: started
-        enabled: yes
-    - name: Install PyMySQL
-      ansible.builtin.package:
-        name: python3-PyMySQL
-        state: present
-    - name: Create a database called webappdb
-      community.mysql.mysql_db:
-        name: webappdb
-        state: present
-        login_unix_socket: /var/lib/mysql/mysql.sock
-    - name: Create a database user called webappuser
-      community.mysql.mysql_user:
-        name: webappuser
-        password: "{{ db_password }}"
-        priv: 'webappdb.*:ALL'
-        state: present
-        login_unix_socket: /var/lib/mysql/mysql.sock
-```

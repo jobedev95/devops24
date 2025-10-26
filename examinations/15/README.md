@@ -94,25 +94,25 @@ vars:
 I have two tasks that uses the `ansible.builtin.get_url` and `ansible.builtin.unarchive` modules respectively to download and extract Node Exporter to `/tmp`. A third task then copies the Node Exporter binary into the directory `/usr/sbin/node_exporter`:
 ```yaml
 - name: Download Node Exporter archive to temporary folder
-      ansible.builtin.get_url:
-        url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
-        dest: /tmp/node_exporter.tar.gz
-        mode: "0644"
+  ansible.builtin.get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/node_exporter.tar.gz
+    mode: "0644"
 
-    - name: Extract Node Exporter binary
-      ansible.builtin.unarchive:
-        src: /tmp/node_exporter.tar.gz
-        dest: /tmp/
-        remote_src: true # Informs Ansible that the archive file is on the remote host
+- name: Extract Node Exporter binary
+  ansible.builtin.unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /tmp/
+    remote_src: true # Informs Ansible that the archive file is on the remote host
 
-    - name: Copy Node Exporter binary to /usr/sbin/node_exporter
-      ansible.builtin.copy:
-        src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
-        dest: /usr/sbin/node_exporter
-        owner: root
-        group: root
-        mode: "0755"
-        remote_src: true # Informs Ansible that the binary file is on the remote host
+- name: Copy Node Exporter binary to /usr/sbin/node_exporter
+  ansible.builtin.copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: /usr/sbin/node_exporter
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true # Informs Ansible that the binary file is on the remote host
 ```
 
 I downloaded the service unit files `node_exporter.service` and `node_exporter.socket`, as well as the configuration file `sysconfig.node_exporter` from the provided GitHub link. I created three tasks in accordance with the instructions in the README file.

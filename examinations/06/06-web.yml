@@ -10,11 +10,13 @@
         owner: root
         group: root
         mode: '0644'
+
     - name: Create web root directory
       ansible.builtin.file:
         path: /var/www/example.internal/html/
         state: directory
         mode: '0755'
+
     - name: Copy index.html to html directory
       ansible.builtin.copy:
         src: files/index.html
@@ -22,6 +24,7 @@
         owner: root
         group: root
         mode: '0644'
+
     - name: Ensure the nginx configuration is updated for example.internal
       ansible.builtin.copy:
         src: files/example.internal.conf
@@ -30,9 +33,11 @@
         group: root
         mode: '0644'
       register: result
+
     - name: Print result
       ansible.builtin.debug:
         var: result
+
     - name: Restart nginx service  # noqa no-handler
       ansible.builtin.service:
         name: nginx

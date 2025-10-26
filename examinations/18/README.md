@@ -172,14 +172,14 @@ vars:
 
 I then have two tasks, one of which uses the custom anagrammer module. It has a `message` parameter which passes in the message variable. It stores the modules output in the variable `result`. With the debug module the playbook prints out the contents of the result variable:
 ```yaml
-    - name: Run the anagrammer module
-      anagrammer:
-        message: "{{ message }}"
-      register: result
+- name: Run the anagrammer module
+  anagrammer:
+    message: "{{ message }}"
+  register: result
 
-    - name: Show the module output
-      debug:
-        var: result
+- name: Show the module output
+  ansible.builtin.debug:
+    var: result
 ```
 
 # BONUS QUESTION
